@@ -5,6 +5,7 @@ from player import Player
 from debug import debug
 from support import *
 from random import choice
+from weapon import Weapon
 
 
 class Level:
@@ -15,6 +16,9 @@ class Level:
         # sprite group setup
         self.visible_sprites = YSortCameraGroup()
         self.obstacle_sprites = pygame.sprite.Group()
+
+        # attack sprites
+        self.current_attack = None
 
         # sprite setup
         self.create_map()
@@ -29,7 +33,6 @@ class Level:
             'grass': import_folder('C:/Users/staff/PycharmProjects/pythonProject/graphics/grass'),
             'objects': import_folder('C:/Users/staff/PycharmProjects/pythonProject/graphics/objects')
         }
-        print(graphics)
 
         for style, layout in layout.items():
             for row_index, row in enumerate(layout):
@@ -48,7 +51,16 @@ class Level:
                             surf = graphics['objects'][int(col)]
                             Tile((x, y), [self.visible_sprites, self.obstacle_sprites], 'object', surf)
 
-        self.player = Player((2000, 1420), [self.visible_sprites], self.obstacle_sprites)
+        self.player = Player((2000, 1420), [self.visible_sprites], self.obstacle_sprites, self.create_attack, self.destroy_attack)
+
+    def create_attack(self):
+        self.current_attack = Weapon(self.player, [self.visible_sprites])
+
+    def destroy_attack(self):
+        if self.current_attack:
+            self.current_attack.kill()
+        self.current_attack = None
+
 
     def run(self):
         # update and draw the game
